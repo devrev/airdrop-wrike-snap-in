@@ -1,0 +1,16 @@
+.DS_Store
+
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore intermediate build folders
+build.*/
+conformance_tests.backup/
+
+# Ignore temporary folders used for runnning tests
+node_build/
+node_conformance_tests/
+
+venv/
+
+.env

@@ -1,0 +1,46 @@
+version: "2"
+
+name: Wrike
+description: Import projects, tasks and users from Wrike.
+
+service_account:
+  display_name: Wrike Bot
+
+functions:
+  - name: extraction
+    description: Extraction function
+
+keyring_types:
+  - id: wrike-connection
+    name: Wrike Connection
+    description: Wrike Connection through API token.
+    kind: "Secret"
+    is_subdomain: false
+    external_system_name: "Wrike"
+    secret_config:
+      secret_transform: ".token" # no transformation
+      fields:
+        - id: token
+          name: Token
+          description: Wrike API token
+      token_verification:
+        url: https://www.wrike.com/api/v4/contacts?me
+        method: GET
+        headers:
+          Authorization: "Bearer [API_KEY]"
+    organization_data:
+      type: "config"
+      url: "https://www.wrike.com/api/v4/spaces?withArchived=false&userIsMember=true"
+      method: "GET"
+      headers:
+        Authorization: "Bearer [API_KEY]"
+      response_jq: "{id: .data[0].id, name: .data[0].title }"
+
+imports:
+  - slug: airdrop-wrike-extractor
+    display_name: Wrike
+    description: Wrike
+    extractor_function: extraction
+    allowed_connection_types:
+      - wrike-connection
+

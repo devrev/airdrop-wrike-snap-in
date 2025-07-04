@@ -1,0 +1,145 @@
+{% include "devrev-snapin-template.plain" %}
+
+#  The Wrike Snap-In
+
+***Definitions:***
+
+- The Snap-In interacts with Wrike API (The API).
+
+- The Space is a Wrike space.
+
+- The Project is a Wrike project.
+
+- The Fetched Projects are The List of Projects that are fetched from The API.
+
+- The Fetched Contacts are The List of Contacts that are fetched from The API.
+
+- The Fetched Tasks are The The List of Tasks for The Project that are fetched from The API.
+
+
+***Non-Functional Requirements:***
+
+- The Wrike API Key is provided in the "key" field of the "connection_data" object which is part of "payload" object.
+
+
+***Test Requirements:***
+
+- Credentials should be read from the environment. The following environment variables are required: `WRIKE_API_KEY` (The Wrike API Key), `WRIKE_WORKSPACE_GID` (The Workspace ID) and `WRIKE_PROJECT_GID` (The Project ID).
+
+## The Boilerplate Code
+
+***Non-Functional Requirements:***
+
+- The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
+
+
+***Functional Requirements:***
+
+- Implement The Function that provides a check if authentication with The API works.
+
+
+## Data Fetching
+
+***Non-Functional Requirements:***
+
+- The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
+
+
+***Functional Requirements:***
+
+- Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects).
+
+  ***Acceptance Tests:***
+
+  - When using The Test Wrike Credentials a project with the title "First project" must be in the result of The Function.
+
+- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). Contact IDs are retrieved from the "spaces/{spaceId}" endpoint using the "members" field. Information about contacts can be fetched from /contacts/{contactIds}. The Space ID {spaceId} is provided in the "org_id" field of the "connection_data" dictionary which is part of "payload" dictionary.
+
+- Implement The Function that uses The API to fetch The List of Tasks for The Project (The Fetched Tasks). The Project ID is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
+
+> Here you can add an acceptance test to check if the correct number if tasks is fetched from our test organization on Wrike.
+
+## Generate 'external_domain_metadata.json'
+
+***Definitions:***
+
+- The structure of The External Domain Metadata JSON object is specified by the JSON schema defined in the resource [external_domain_metadata_schema.json](external_domain_metadata_schema.json).
+  - Please note that all refers_to keys in reference and typed_reference fields must use the format "#record:<record_type_key>", where <record_type_key> matches a key in the top-level record_types. This ensures references are unambiguous and valid. Use {} as the value to refer by default identifier (id), or specify { "by_field": "field_name" } to use a custom key.
+
+***Non-Functional Requirements:***
+
+- Store The External Domain Metadata JSON object as a separate JSON file.
+
+***Functional Requirements:***
+
+- Implement The Function that generates and returns The External Domain Metadata JSON object. The record types that should be included in the The External Domain Metadata are The List of Tasks for The Project ('tasks') and The List of Contacts of The Space ('users').
+
+  ***Acceptance Tests:***
+
+  - Validate generated The External Domain Metadata JSON object with the chef-cli tool (The Chef CLI) using the command "chef-cli validate-metadata":
+    - This command reads JSON object from stdin.
+    - The path to The Chef CLI executable is provided in the environment variables `CHEF_CLI_PATH`.
+    - For the test to be successful The Chef CLI must return an empty output.
+    - The test should always fail if The Chef CLI is not available.
+
+## Generate 'initial_domain_mapping.json'
+
+***Definitions:***
+
+- The structure of The Initial Domain Mapping JSON object is specified by the JSON schema defined in the resource [initial_mappings_schema.yaml](initial_mappings_schema.yaml).
+  - For a complete list of supported DevRev object types and their fields, see resource [Supported DevRev object types for Airdrop](docs/supported-object-types.md).
+  - For information about transformation methods, see resource [Mapping Reasons](docs/mapping-reasons.mdx).
+  - When working with devrev_leaf_type, be aware that the schema expects different formats depending on context. In most places, it should be passed as an object with object_category and object_type. However, in the airdrop-recipe-create-possible-record-type-mapping context, it must be a string representing only the object_type.
+  - Please note that mappings are split into separate ‘shards’ - one for each record type - for easier manipulation and storage.
+  - Please note that a leaf type or a concrete id has to be selected for use_devrev_record, but not both.
+
+***Non-Functional Requirements:***
+
+- Store The Initial Domain Mapping JSON object as a separate JSON file.
+
+
+***Functional Requirements:***
+
+- Implement The Function that generates and returns The Initial Domain Mapping JSON object.
+  - Use `dvrv-eu-1` as the active partition
+
+  ***Acceptance Tests:***
+
+  - Validate generated The Initial Domain Mapping JSON object with the chef-cli tool (The Chef CLI) using the command "chef-cli initial-mapping check -m <The External Domain Metadata JSON object file>":
+    - The Chef CLI reads The Initial Domain Mapping JSON object from stdin.
+    - The path to The Chef CLI executable is provided in the environment variables `CHEF_CLI_PATH`.
+    - The test should always fail if The Chef CLI returns a non-empty output.
+    - The test should always fail if The Chef CLI is not available.
+
+## Pushing data to DevRev servers
+
+***Non-Functional Requirements:***
+
+- All operations accessing external services or data providers must be implemented in worker threads.
+
+***Functional Requirements:***
+
+- Use The Initial Domain Mapping JSON object for initialDomainMapping parameter when spawning a new worker.
+
+- Implement The Function named "extraction" (The Extraction Function) that pushes The Fetched Projects as external sync units if "event_type" equals "EXTRACTION_EXTERNAL_SYNC_UNITS_START".
+
+  ***Acceptance Tests:***
+
+  - Test The Extraction Function using the resource [external_sync_unit_check.json](test_data/external_sync_unit_check.json). For the test to be successful The Callback Server **must** receive from DevRev **exactly one** event with "event_type" that equals "EXTRACTION_EXTERNAL_SYNC_UNITS_DONE". The test must not send the event directly to The Callback Server.
+
+- If "event_type" equals "EXTRACTION_EXTERNAL_SYNC_UNITS_START" The Extraction Function should fetch the tasks count for each project and push it as part of the external sync units.
+
+- If "event_type" equals "EXTRACTION_METADATA_START" The Extraction Function should implement the "metadata extraction" part of the extraction workflow by pushing The External Domain Metadata JSON object to the repository called 'external_domain_metadata'.
+
+- If "event_type" equals "EXTRACTION_DATA_START" The Extraction Function should:
+  - push The Fetched Contacts to the repository named 'users'
+  - push The Fetched Tasks to the repository designated for 'tasks' data
+  (but make sure that a single "EXTRACTION_DATA_DONE" event is emitted)
+
+  ***Acceptance Tests:***
+
+  - Test The Extraction Function using the resource [data_extraction_test.json](test_data/data_extraction_test.json). Test is successful if The Callback Server receives from DevRev a **single** event with "event_type" that equals "EXTRACTION_DATA_DONE". The test must not send event directly to The Callback Server.
+
+  - Test The Extraction Function using the resource [data_extraction_test.json](test_data/data_extraction_test.json). Test is successful if The Callback Server does not receive from DevRev any event with "event_type" that equals "EXTRACTION_DATA_ERROR". The test must not send event directly to The Callback Server.
+
+- If "event_type" equals "EXTRACTION_ATTACHMENTS_START" or "EXTRACTION_ATTACHMENTS_CONTINUE" The Extraction Function should implement attachment extraction as described in the resource [attachments-extraction.md](docs/attachments-extraction.md).

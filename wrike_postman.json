@@ -1,0 +1,439 @@
+{
+  "info": {},
+  "item": [
+    {
+      "name": "Contacts",
+      "item": [
+        {
+          "name": "Get All Contacts",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/contacts?deleted=false&fields=[metadata,workScheduleId,currentBillRate,currentCostRate,jobRoleId]",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "contacts"
+              ],
+              "query": [
+                {
+                  "key": "deleted",
+                  "value": "false"
+                },
+                {
+                  "key": "fields",
+                  "value": "[metadata,workScheduleId,currentBillRate,currentCostRate,jobRoleId]"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Information about specific contact",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/contacts/KUAFY3BJ?fields=[metadata,workScheduleId]",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "contacts",
+                "KUAFY3BJ"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "[metadata,workScheduleId]"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Folder & Projects",
+      "item": [
+        {
+          "name": "Get Folder by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/folders/IEACW7SVI4PX3YZS?fields=[briefDescription,customColumnIds,attachmentCount,contractType]",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "folders",
+                "IEACW7SVI4PX3YZS"
+              ],
+              "query": [
+                {
+                  "disabled": true
+                },
+                {
+                  "key": "fields",
+                  "value": "[briefDescription,customColumnIds,attachmentCount,contractType]"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Tasks",
+      "item": [
+        {
+          "name": "Get Task by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/tasks/IEACW7SVKRAJXB7L?fields=[customItemTypeId,finance,billingType,effortAllocation,responsiblePlaceholderIds,attachmentCount,recurrent]",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "tasks",
+                "IEACW7SVKRAJXB7L"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "[customItemTypeId,finance,billingType,effortAllocation,responsiblePlaceholderIds,attachmentCount,recurrent]"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Multiple Tasks by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/tasks/IEACW7SVKQZEBEUN,IEACW7SVKQPX4WHN?fields=[recurrent,attachmentCount,effortAllocation,billingType]",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "tasks",
+                "IEACW7SVKQZEBEUN,IEACW7SVKQPX4WHN"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "[recurrent,attachmentCount,effortAllocation,billingType]"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Query Tasks in a specific Space",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/spaces/IEACW7SVI4O6BDQE/tasks?descendants=true&status=Active&importance=Normal&type=Planned&fields=[recurrent,attachmentCount,effortAllocation,billingType]&dueDate={\"start\":\"2020-07-01\",\"end\":\"2020-07-07\"}",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "spaces",
+                "IEACW7SVI4O6BDQE",
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "descendants",
+                  "value": "true"
+                },
+                {
+                  "key": "status",
+                  "value": "Active"
+                },
+                {
+                  "key": "importance",
+                  "value": "Normal"
+                },
+                {
+                  "key": "type",
+                  "value": "Planned"
+                },
+                {
+                  "key": "fields",
+                  "value": "[recurrent,attachmentCount,effortAllocation,billingType]"
+                },
+                {
+                  "key": "dueDate",
+                  "value": "{\"start\":\"2020-07-01\",\"end\":\"2020-07-07\"}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Query Tasks in a specific Folder/Project",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/folders/IEACW7SVI4OMYFIY/tasks?descendants=true&status=Active&importance=Normal&type=Planned&fields=[recurrent,attachmentCount,effortAllocation,billingType]&dueDate={\"start\":\"2020-07-01\",\"end\":\"2020-07-07\"}&pageSize=200",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "folders",
+                "IEACW7SVI4OMYFIY",
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "descendants",
+                  "value": "true"
+                },
+                {
+                  "key": "status",
+                  "value": "Active"
+                },
+                {
+                  "key": "importance",
+                  "value": "Normal"
+                },
+                {
+                  "key": "type",
+                  "value": "Planned"
+                },
+                {
+                  "key": "fields",
+                  "value": "[recurrent,attachmentCount,effortAllocation,billingType]"
+                },
+                {
+                  "key": "dueDate",
+                  "value": "{\"start\":\"2020-07-01\",\"end\":\"2020-07-07\"}"
+                },
+                {
+                  "key": "pageSize",
+                  "value": "200"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Tasks & Subtasks in a specific Folder/Project",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/folders/IEACW7SVI4OMYFIY/tasks?descendants=true&subTasks=true",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "folders",
+                "IEACW7SVI4OMYFIY",
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "descendants",
+                  "value": "true"
+                },
+                {
+                  "key": "subTasks",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attachments",
+      "item": [
+        {
+          "name": "Get Attachments",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/attachments?versions=true&createdDate={\"start\":\"2020-07-01T00:00:00Z\",\"end\":\"2020-07-02T07:53:33Z\"}&withUrls=true",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "attachments"
+              ],
+              "query": [
+                {
+                  "key": "versions",
+                  "value": "true"
+                },
+                {
+                  "key": "createdDate",
+                  "value": "{\"start\":\"2020-07-01T00:00:00Z\",\"end\":\"2020-07-02T07:53:33Z\"}"
+                },
+                {
+                  "key": "withUrls",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attachments on Folder or Project",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/folders/IEACW7SVI4PZXTGO/attachments",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "folders",
+                "IEACW7SVI4PZXTGO",
+                "attachments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attachments on Task",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/tasks/IEACW7SVKQOKD5EG/attachments",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "tasks",
+                "IEACW7SVKQOKD5EG",
+                "attachments"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Attachments details",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/attachments/IEACW7SVIYEV4HBN",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "attachments",
+                "IEACW7SVIYEV4HBN"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Download Wrike Attachment",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/attachments/IEACW7SVIYJJEUHD/download/Lorem Ipsum.docx",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "attachments",
+                "IEACW7SVIYJJEUHD",
+                "download",
+                "Lorem Ipsum.docx"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Access URL for Attachment",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/attachments/IEACW7SVIYJJEUHD/url",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "attachments",
+                "IEACW7SVIYJJEUHD",
+                "url"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Spaces",
+      "item": [
+        {
+          "name": "Get Spaces",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/spaces?withArchived=false&userIsMember=false",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "spaces"
+              ],
+              "query": [
+                {
+                  "key": "withArchived",
+                  "value": "false"
+                },
+                {
+                  "key": "userIsMember",
+                  "value": "false"
+                },
+                {
+                  "key": "fields",
+                  "value": "[members]",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Space by ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/spaces/IEACW7SVI4XDCUZX",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "spaces",
+                "IEACW7SVI4XDCUZX"
+              ],
+              "query": [
+                {
+                  "key": "fields",
+                  "value": "[members]"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{APIToken}}",
+        "type": "string"
+      }
+    ]
+  }
+}

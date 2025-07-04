@@ -1,0 +1,74 @@
+[
+    {
+        "payload": {
+            "connection_data": {
+                "key": "test-key",
+                "key_type": "",
+                "org_id": "test-org-id",
+                "org_name": "My Space"
+            },
+            "event_context": {
+                "callback_url": "http://localhost:8002/callback",
+                "dev_oid": "test-oid",
+                "dev_org": "test-org",
+                "dev_org_id": "test-org-id",
+                "dev_uid": "test-uid",
+                "dev_user": "test-user",
+                "dev_user_id": "test-user-id",
+                "event_type_adaas": "",
+                "external_sync_unit": "test-external-sync-unit",
+                "external_sync_unit_id": "test-external-sync-unit-id",
+                "external_sync_unit_name": "My Project",
+                "external_system": "test-external-system",
+                "external_system_id": "test-external-system-id",
+                "external_system_name": "Wrike",
+                "external_system_type": "ADaaS",
+                "import_slug": "airdrop-wrike-snap-in",
+                "mode": "INITIAL",
+                "request_id": "test-request-id",
+                "request_id_adaas": "test-request-id-adaas",
+                "run_id": "test-run_id",
+                "sequence_version": "6",
+                "snap_in_slug": "airdrop-wrike-snap-in",
+                "snap_in_version_id": "don:integration:dvrv-eu-1:devo/test:snap_in_package/test:snap_in_version/test",
+                "sync_run": "test-sync-run",
+                "sync_run_id": "test-sync-run-id",
+                "sync_tier": "sync_tier_2",
+                "sync_unit": "don:integration:dvrv-eu-1:devo/test:external_system_type/ADAAS:external_system/test:sync_unit/test",
+                "sync_unit_id": "test-sync-unit-id",
+                "uuid": "test-uuid",
+                "worker_data_url": "http://localhost:8003/external-worker"
+            },
+            "event_type": "EXTRACTION_DATA_START"
+        },
+        "context": {
+            "dev_oid": "don:identity:dvrv-eu-1:devo/test",
+            "automation_id": "",
+            "source_id": "",
+            "snap_in_id": "don:integration:dvrv-eu-1:devo/test:snap_in/test",
+            "snap_in_version_id": "don:integration:dvrv-eu-1:devo/test:snap_in_package/test:snap_in_version/test",
+            "service_account_id": "don:identity:dvrv-eu-1:devo/test:svcacc/123",
+            "secrets": {
+                "service_account_token": "test-service-account-token"
+            },
+            "user_id": "don:identity:dvrv-eu-1:devo/test:devu/1",
+            "event_id": "",
+            "execution_id": "test-execution-id"
+        },
+        "execution_metadata": {
+            "request_id": "test-request-id",
+            "function_name": "extraction",
+            "event_type": "EXTRACTION_DATA_START",
+            "devrev_endpoint": "http://localhost:8003"
+        },
+        "input_data": {
+            "global_values": {},
+            "event_sources": {},
+            "keyrings": null,
+            "resources": {
+                "keyrings": {},
+                "tags": {}
+            }
+        }
+    }
+]
