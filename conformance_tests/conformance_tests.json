@@ -1,0 +1,95 @@
+{
+    "1.1": {
+        "functional_requirement": "- Implement The Function that only checks if The Function can be invoked.",
+        "folder_name": "conformance_tests/function"
+    },
+    "1.2": {
+        "functional_requirement": "- Implement The Function that only checks if the data extraction workflow can be invoked.",
+        "folder_name": "conformance_tests/workflow_validation",
+        "acceptance_tests": [
+            "- Test the data extraction workflow invocation using the resource `[resource]extraction_health_check.json`."
+        ]
+    },
+    "1.3": {
+        "functional_requirement": "- Implement The Function that checks if pushing data works. The URL where data is to be pushed is provided in the \"callback_url\" field of the \"event_context\" dictionary which is part of \"payload\" dictionary.",
+        "folder_name": "conformance_tests/callback_validation"
+    },
+    "1.4": {
+        "functional_requirement": "- Implement The Function that provides a test of the 'external sync units' part of the extraction workflow. The name of The Function must be 'extraction_external_sync_unit_check'.",
+        "folder_name": "conformance_tests/extraction_validation",
+        "acceptance_tests": [
+            "- Test The Function using the resource `[resource]external_sync_unit_check.json`. Test is successful if The Callback Server receives from DevRev an event with \"event_type\" that equals \"EXTRACTION_EXTERNAL_SYNC_UNITS_DONE\". The test must not send the event directly to The Callback Server."
+        ]
+    },
+    "1.5": {
+        "functional_requirement": "- Implement The Function that provides a test of the 'data extraction' part of the extraction workflow as described in the resource `[resource]data-extraction.md`. Only check if data extraction can be triggered and that it successfully completes. Disregard all other details. The name of The Function must be 'data_extraction_check'.",
+        "folder_name": "conformance_tests/data_extraction_check",
+        "acceptance_tests": [
+            "- Test The Function using the resource `[resource]data_extraction_check.json`. Test is successful if The Callback Server receives from DevRev an event with \"event_type\" that equals \"EXTRACTION_DATA_DONE\". The test must not send the event directly to The Callback Server."
+        ]
+    },
+    "2.1.1": {
+        "functional_requirement": "- Implement The Function that provides a check if authentication with The API works.",
+        "folder_name": "conformance_tests/authentication_validation"
+    },
+    "2.2.1": {
+        "functional_requirement": "- Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects).",
+        "folder_name": "conformance_tests/api_project_fetching",
+        "acceptance_tests": [
+            "- When using The Test Wrike Credentials a project with the title \"First project\" must be in the result of The Function."
+        ]
+    },
+    "2.2.2": {
+        "functional_requirement": "- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). Contact IDs are retrieved from the \"spaces/{spaceId}\" endpoint using the \"members\" field. Information about contacts can be fetched from /contacts/{contactIds}.",
+        "folder_name": "conformance_tests/space_contacts_fetching"
+    },
+    "2.2.3": {
+        "functional_requirement": "- Implement The Function that uses The API to fetch The List of Tasks of The Project (The Fetched Tasks). The Project ID is provided in the \"external_sync_unit_id\" field of the \"event_context\" dictionary which is part of \"payload\" dictionary.",
+        "folder_name": "conformance_tests/api_task_fetching"
+    },
+    "2.3.1": {
+        "functional_requirement": "- Implement The Function that generates and returns The External Domain Metadata JSON object. The record types that should be included in the The External Domain Metadata are The List of Tasks of The Project ('tasks') and The List of Contacts of The Space ('users').",
+        "folder_name": "conformance_tests/external_domain_metadata_generation",
+        "acceptance_tests": [
+            "- Validate generated The External Domain Metadata JSON object with the chef-cli tool (The Chef CLI) using the command \"chef-cli validate-metadata\":\n  - This command reads JSON object from stdin.\n  - The path to The Chef CLI executable is provided in the environment variables `CHEF_CLI_PATH`.\n  - For the test to be successful The Chef CLI must return an empty output.\n  - The test should always fail if The Chef CLI is not available."
+        ]
+    },
+    "2.4.1": {
+        "functional_requirement": "- Implement The Function that generates and returns The Initial Domain Mapping JSON object.",
+        "folder_name": "conformance_tests/domain_mapping_generation",
+        "acceptance_tests": [
+            "- Validate generated The Initial Domain Mapping JSON object with the chef-cli tool (The Chef CLI) using the command \"chef-cli initial-mapping check -m <The External Domain Metadata JSON object file>\":\n  - The Chef CLI reads The Initial Domain Mapping JSON object from stdin.\n  - The path to The Chef CLI executable is provided in the environment variables `CHEF_CLI_PATH`.\n  - The test should always fail if The Chef CLI returns a non-empty output.\n  - The test should always fail if The Chef CLI is not available."
+        ]
+    },
+    "2.5.1": {
+        "functional_requirement": "- Use The Initial Domain Mapping JSON object for initialDomainMapping parameter when spawning a new worker.",
+        "folder_name": "conformance_tests/worker_initialization"
+    },
+    "2.5.2": {
+        "functional_requirement": "- Implement The Function named \"extraction\" (The Extraction Function) that pushes The Fetched Projects as external sync units if \"event_type\" equals \"EXTRACTION_EXTERNAL_SYNC_UNITS_START\".",
+        "folder_name": "conformance_tests/external_sync_units_extraction",
+        "acceptance_tests": [
+            "- Test The Extraction Function using the resource `[resource]external_sync_unit_check.json`. Make sure to replace placeholders in the resource with The Wrike API Key and The Space ID. For the test to be successful The Callback Server **must** receive from DevRev **exactly one** event with \"event_type\" that equals \"EXTRACTION_EXTERNAL_SYNC_UNITS_DONE\". The test must not send the event directly to The Callback Server."
+        ]
+    },
+    "2.5.3": {
+        "functional_requirement": "- If \"event_type\" equals \"EXTRACTION_EXTERNAL_SYNC_UNITS_START\" The Extraction Function should fetch the tasks count for each project and push it as part of the external sync units.",
+        "folder_name": "conformance_tests/project_tasks_counting"
+    },
+    "2.5.4": {
+        "functional_requirement": "- If \"event_type\" equals \"EXTRACTION_METADATA_START\" The Extraction Function should implement the \"metadata extraction\" part of the extraction workflow by pushing The External Domain Metadata JSON object to the repository called 'external_domain_metadata'.",
+        "folder_name": "conformance_tests/metadata_extraction_processing"
+    },
+    "2.5.5": {
+        "functional_requirement": "- If \"event_type\" equals \"EXTRACTION_DATA_START\" The Extraction Function should:\n  - push The Fetched Contacts to the repository named 'users'\n  - push The Fetched Tasks to the repository designated for 'tasks' data\n    (but make sure that a single \"EXTRACTION_DATA_DONE\" event is emitted)",
+        "folder_name": "conformance_tests/repository_data_extraction",
+        "acceptance_tests": [
+            "- Test The Extraction Function using the resource `[resource]data_extraction_test.json`. Test is successful if The Callback Server receives from DevRev a **single** event with \"event_type\" that equals \"EXTRACTION_DATA_DONE\". The test must not send event directly to The Callback Server.",
+            "- Test The Extraction Function using the resource `[resource]data_extraction_test.json`. Test is successful if The Callback Server does not receive from DevRev any event with \"event_type\" that equals \"EXTRACTION_DATA_ERROR\". The test must not send event directly to The Callback Server."
+        ]
+    },
+    "2.5.6": {
+        "functional_requirement": "- If \"event_type\" equals \"EXTRACTION_ATTACHMENTS_START\" or \"EXTRACTION_ATTACHMENTS_CONTINUE\" The Extraction Function should implement attachment extraction as described in the resource `[resource]attachments-extraction.md`.",
+        "folder_name": "conformance_tests/attachments_extraction"
+    }
+}

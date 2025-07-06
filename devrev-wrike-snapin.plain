@@ -14,17 +14,21 @@
 
 - The Fetched Contacts are The List of Contacts that are fetched from The API.
 
-- The Fetched Tasks are The The List of Tasks for The Project that are fetched from The API.
+- The Fetched Tasks are The The List of Tasks of The Project that are fetched from The API.
 
 
 ***Non-Functional Requirements:***
 
 - The Wrike API Key is provided in the "key" field of the "connection_data" object which is part of "payload" object.
 
+- The Space ID is provided in the "org_id" field of the "connection_data" object which is part of "payload" object.
+
 
 ***Test Requirements:***
 
-- Credentials should be read from the environment. The following environment variables are required: `WRIKE_API_KEY` (The Wrike API Key), `WRIKE_WORKSPACE_GID` (The Workspace ID) and `WRIKE_PROJECT_GID` (The Project ID).
+- Credentials should be read from the environment. The following environment variables are required: `WRIKE_API_KEY` (The Wrike API Key) and `WRIKE_SPACE_GID` (The Space ID).
+
+- "external_sync_unit_id" "IEAGS6BYI5RFMPPY" can be used when space ID is required for testing purposes.
 
 ## The Boilerplate Code
 
@@ -53,9 +57,9 @@
 
   - When using The Test Wrike Credentials a project with the title "First project" must be in the result of The Function.
 
-- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). Contact IDs are retrieved from the "spaces/{spaceId}" endpoint using the "members" field. Information about contacts can be fetched from /contacts/{contactIds}. The Space ID {spaceId} is provided in the "org_id" field of the "connection_data" dictionary which is part of "payload" dictionary.
+- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). Contact IDs are retrieved from the "spaces/{spaceId}" endpoint using the "members" field. Information about contacts can be fetched from /contacts/{contactIds}.
 
-- Implement The Function that uses The API to fetch The List of Tasks for The Project (The Fetched Tasks). The Project ID is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
+- Implement The Function that uses The API to fetch The List of Tasks of The Project (The Fetched Tasks). The Project ID is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
 
 > Here you can add an acceptance test to check if the correct number if tasks is fetched from our test organization on Wrike.
 
@@ -72,7 +76,7 @@
 
 ***Functional Requirements:***
 
-- Implement The Function that generates and returns The External Domain Metadata JSON object. The record types that should be included in the The External Domain Metadata are The List of Tasks for The Project ('tasks') and The List of Contacts of The Space ('users').
+- Implement The Function that generates and returns The External Domain Metadata JSON object. The record types that should be included in the The External Domain Metadata are The List of Tasks of The Project ('tasks') and The List of Contacts of The Space ('users').
 
   ***Acceptance Tests:***
 
@@ -101,7 +105,6 @@
 ***Functional Requirements:***
 
 - Implement The Function that generates and returns The Initial Domain Mapping JSON object.
-  - Use `dvrv-eu-1` as the active partition
 
   ***Acceptance Tests:***
 
@@ -125,7 +128,7 @@
 
   ***Acceptance Tests:***
 
-  - Test The Extraction Function using the resource [external_sync_unit_check.json](test_data/external_sync_unit_check.json). For the test to be successful The Callback Server **must** receive from DevRev **exactly one** event with "event_type" that equals "EXTRACTION_EXTERNAL_SYNC_UNITS_DONE". The test must not send the event directly to The Callback Server.
+  - Test The Extraction Function using the resource [external_sync_unit_check.json](test_data/external_sync_unit_check.json). Make sure to replace placeholders in the resource with The Wrike API Key and The Space ID. For the test to be successful The Callback Server **must** receive from DevRev **exactly one** event with "event_type" that equals "EXTRACTION_EXTERNAL_SYNC_UNITS_DONE". The test must not send the event directly to The Callback Server.
 
 - If "event_type" equals "EXTRACTION_EXTERNAL_SYNC_UNITS_START" The Extraction Function should fetch the tasks count for each project and push it as part of the external sync units.
 

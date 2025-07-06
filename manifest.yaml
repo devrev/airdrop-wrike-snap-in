@@ -34,7 +34,7 @@ keyring_types:
       method: "GET"
       headers:
         Authorization: "Bearer [API_KEY]"
-      response_jq: "{id: .data[0].id, name: .data[0].title }"
+      response_jq: ".data[] | {id, name: .title}"
 
 imports:
   - slug: airdrop-wrike-extractor

@@ -18,7 +18,7 @@
                 "event_type_adaas": "",
                 "external_sync_unit": "test-external-sync-unit",
                 "external_sync_unit_id": "test-external-sync-unit-id",
-                "external_sync_unit_name": "My Project",
+                "external_sync_unit_name": "test-external-sync-unit-name",
                 "external_system": "test-external-system",
                 "external_system_id": "test-external-system-id",
                 "external_system_name": "Wrike",
@@ -34,7 +34,7 @@
                 "sync_run": "test-sync-run",
                 "sync_run_id": "test-sync-run-id",
                 "sync_tier": "sync_tier_2",
-                "sync_unit": "don:integration:dvrv-eu-1:devo/test:external_system_type/ADAAS:external_system/test:sync_unit/test",
+                "sync_unit": "test-sync-unit",
                 "sync_unit_id": "test-sync-unit-id",
                 "uuid": "test-uuid",
                 "worker_data_url": "http://localhost:8003/external-worker"

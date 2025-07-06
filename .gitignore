@@ -5,6 +5,7 @@ node_modules/
 
 # Ignore intermediate build folders
 build.*/
+code_old.*/
 conformance_tests.backup/
 
 # Ignore temporary folders used for runnning tests

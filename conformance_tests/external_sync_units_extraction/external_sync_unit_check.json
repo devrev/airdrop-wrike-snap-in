@@ -1,0 +1,75 @@
+[
+    {
+        "payload": {
+            "connection_data": {
+                "key": "test-key",
+                "key_type": "",
+                "org_id": "org-id",
+                "org_name": "Personal"
+            },
+            "event_context": {
+                "callback_url": "http://localhost:8002/callback",
+                "dev_oid": "test-dev-org",
+                "dev_org": "test-dev-org",
+                "dev_org_id": "test-dev-org-id",
+                "dev_uid": "DEVU-1",
+                "dev_user": "DEVU-1",
+                "dev_user_id": "DEVU-1",
+                "event_type_adaas": "",
+                "external_sync_unit": "test",
+                "external_sync_unit_id": "test1",
+                "external_sync_unit_name": "First project",
+                "external_system": "test",
+                "external_system_id": "test",
+                "external_system_name": "Wrike",
+                "external_system_type": "ADaaS",
+                "import_slug": "airdrop-wrike-extractor",
+                "initial_sync_scope": "full-history",
+                "mode": "INITIAL",
+                "request_id": "123",
+                "request_id_adaas": "123",
+                "run_id": "123",
+                "sequence_version": "6",
+                "snap_in_slug": "airdrop-wrike-snap-in",
+                "snap_in_version_id": "version-id",
+                "sync_run": "123",
+                "sync_run_id": "123",
+                "sync_tier": "sync_tier_2",
+                "sync_unit": "sync-unit",
+                "sync_unit_id": "sync-unit-id",
+                "uuid": "123",
+                "worker_data_url": "http://localhost:8003/external-worker"
+            },
+            "event_type": "EXTRACTION_EXTERNAL_SYNC_UNITS_START"
+        },
+        "context": {
+            "dev_oid": "test-dev-org",
+            "automation_id": "",
+            "source_id": "",
+            "snap_in_id": "snap-in-id",
+            "snap_in_version_id": "snap-in-version-id",
+            "service_account_id": "service-account-id",
+            "secrets": {
+                "service_account_token": "account-token"
+            },
+            "user_id": "don:identity:dvrv-us-1:devo/test-dev-org:devu/1",
+            "event_id": "",
+            "execution_id": "123"
+        },
+        "execution_metadata": {
+            "request_id": "123",
+            "function_name": "extraction",
+            "event_type": "EXTRACTION_EXTERNAL_SYNC_UNITS_START",
+            "devrev_endpoint": "http://localhost:8003"
+        },
+        "input_data": {
+            "global_values": {},
+            "event_sources": {},
+            "keyrings": null,
+            "resources": {
+                "keyrings": {},
+                "tags": {}
+            }
+        }
+    }
+]
