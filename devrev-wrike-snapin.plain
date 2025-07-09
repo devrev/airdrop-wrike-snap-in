@@ -54,8 +54,6 @@
 
 - If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
 
-
-
 ***Functional Requirements:***
 
 - Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects).
