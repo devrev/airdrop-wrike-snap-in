@@ -36,17 +36,24 @@
 
 - The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
 
+- The Postman Request Fields is a query parameter with key `fields` and value as a list of strings. The Postman Request Fields are optional and are defined per request basis. The Postman Request Fields for each request is determined solely by The Postman Collection.
+
+- If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
 
 ***Functional Requirements:***
 
 - Implement The Function that provides a check if authentication with The API works.
-
 
 ## Data Fetching
 
 ***Non-Functional Requirements:***
 
 - The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
+
+- The Postman Request Fields is a query parameter with key `fields` and value as a list of strings. The Postman Request Fields are optional and are defined per request basis. The Postman Request Fields for each request is determined solely by The Postman Collection.
+
+- If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
+
 
 
 ***Functional Requirements:***
