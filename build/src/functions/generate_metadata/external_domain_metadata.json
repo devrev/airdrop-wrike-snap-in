@@ -1,0 +1,254 @@
+{
+  "schema_version": "v0.2.0",
+  "record_types": {
+    "tasks": {
+      "name": "Task",
+      "description": "A Wrike task",
+      "fields": {
+        "id": {
+          "name": "ID",
+          "type": "text",
+          "is_required": true,
+          "is_identifier": true,
+          "is_indexed": true
+        },
+        "title": {
+          "name": "Title",
+          "type": "text",
+          "is_required": true,
+          "is_indexed": true
+        },
+        "description": {
+          "name": "Description",
+          "type": "rich_text",
+          "is_required": false
+        },
+        "status": {
+          "name": "Status",
+          "type": "enum",
+          "is_required": true,
+          "enum": {
+            "values": [
+              {
+                "key": "Active",
+                "name": "Active"
+              },
+              {
+                "key": "Completed",
+                "name": "Completed"
+              },
+              {
+                "key": "Deferred",
+                "name": "Deferred"
+              },
+              {
+                "key": "Cancelled",
+                "name": "Cancelled"
+              }
+            ]
+          }
+        },
+        "importance": {
+          "name": "Importance",
+          "type": "enum",
+          "is_required": true,
+          "enum": {
+            "values": [
+              {
+                "key": "High",
+                "name": "High"
+              },
+              {
+                "key": "Normal",
+                "name": "Normal"
+              },
+              {
+                "key": "Low",
+                "name": "Low"
+              }
+            ]
+          }
+        },
+        "created_date": {
+          "name": "Created Date",
+          "type": "timestamp",
+          "is_required": true,
+          "is_indexed": true
+        },
+        "updated_date": {
+          "name": "Updated Date",
+          "type": "timestamp",
+          "is_required": true,
+          "is_indexed": true
+        },
+        "completed_date": {
+          "name": "Completed Date",
+          "type": "timestamp",
+          "is_required": false
+        },
+        "due_date": {
+          "name": "Due Date",
+          "type": "timestamp",
+          "is_required": false
+        },
+        "parent_ids": {
+          "name": "Parent IDs",
+          "type": "text",
+          "is_required": false,
+          "collection": {
+            "min_length": 0
+          }
+        },
+        "responsible_ids": {
+          "name": "Responsible Users",
+          "type": "reference",
+          "is_required": false,
+          "reference": {
+            "refers_to": {
+              "#record:users": {}
+            }
+          },
+          "collection": {
+            "min_length": 0
+          }
+        },
+        "author_ids": {
+          "name": "Authors",
+          "type": "reference",
+          "is_required": false,
+          "reference": {
+            "refers_to": {
+              "#record:users": {}
+            }
+          },
+          "collection": {
+            "min_length": 0
+          }
+        },
+        "custom_status_id": {
+          "name": "Custom Status ID",
+          "type": "text",
+          "is_required": false
+        },
+        "permalink": {
+          "name": "Permalink",
+          "type": "text",
+          "is_required": false
+        }
+      },
+      "stage_diagram": {
+        "controlling_field": "status",
+        "starting_stage": "Active",
+        "all_transitions_allowed": false,
+        "stages": {
+          "Active": {
+            "transitions_to": ["Completed", "Deferred", "Cancelled"],
+            "state": "open"
+          },
+          "Completed": {
+            "transitions_to": ["Active"],
+            "state": "closed"
+          },
+          "Deferred": {
+            "transitions_to": ["Active", "Completed", "Cancelled"],
+            "state": "in_progress"
+          },
+          "Cancelled": {
+            "transitions_to": ["Active"],
+            "state": "closed"
+          }
+        },
+        "states": {
+          "open": {
+            "name": "Open"
+          },
+          "in_progress": {
+            "name": "In Progress"
+          },
+          "closed": {
+            "name": "Closed",
+            "is_end_state": true
+          }
+        }
+      }
+    },
+    "users": {
+      "name": "User",
+      "description": "A Wrike user/contact",
+      "fields": {
+        "id": {
+          "name": "ID",
+          "type": "text",
+          "is_required": true,
+          "is_identifier": true,
+          "is_indexed": true
+        },
+        "first_name": {
+          "name": "First Name",
+          "type": "text",
+          "is_required": true,
+          "is_indexed": true
+        },
+        "last_name": {
+          "name": "Last Name",
+          "type": "text",
+          "is_required": true,
+          "is_indexed": true
+        },
+        "type": {
+          "name": "Type",
+          "type": "enum",
+          "is_required": true,
+          "enum": {
+            "values": [
+              {
+                "key": "Person",
+                "name": "Person"
+              },
+              {
+                "key": "Group",
+                "name": "Group"
+              }
+            ]
+          }
+        },
+        "email": {
+          "name": "Email",
+          "type": "text",
+          "is_required": false,
+          "is_indexed": true
+        },
+        "title": {
+          "name": "Title",
+          "type": "text",
+          "is_required": false
+        },
+        "company_name": {
+          "name": "Company Name",
+          "type": "text",
+          "is_required": false
+        },
+        "phone": {
+          "name": "Phone",
+          "type": "text",
+          "is_required": false
+        },
+        "location": {
+          "name": "Location",
+          "type": "text",
+          "is_required": false
+        },
+        "is_deleted": {
+          "name": "Is Deleted",
+          "type": "bool",
+          "is_required": false
+        },
+        "me": {
+          "name": "Is Current User",
+          "type": "bool",
+          "is_required": false
+        }
+      }
+    }
+  }
+}

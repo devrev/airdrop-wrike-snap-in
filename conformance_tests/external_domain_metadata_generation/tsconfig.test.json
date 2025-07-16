@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true, 
+    "moduleResolution": "node",
+    "esModuleInterop": true
+  },
+  "include": ["*.test.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -9,7 +9,7 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{WrikeAPI}}/contacts?deleted=false&fields=[metadata,workScheduleId,currentBillRate,currentCostRate,jobRoleId]",
+              "raw": "{{WrikeAPI}}/contacts?deleted=false&fields=[metadata,currentBillRate,currentCostRate,jobRoleId]",
               "host": [
                 "{{WrikeAPI}}"
               ],
@@ -23,7 +23,7 @@
                 },
                 {
                   "key": "fields",
-                  "value": "[metadata,workScheduleId,currentBillRate,currentCostRate,jobRoleId]"
+                  "value": "[metadata,currentBillRate,currentCostRate,jobRoleId]"
                 }
               ]
             }
@@ -34,19 +34,13 @@
           "request": {
             "method": "GET",
             "url": {
-              "raw": "{{WrikeAPI}}/contacts/KUAFY3BJ?fields=[metadata,workScheduleId]",
+              "raw": "{{WrikeAPI}}/contacts/KUAFY3BJ",
               "host": [
                 "{{WrikeAPI}}"
               ],
               "path": [
                 "contacts",
                 "KUAFY3BJ"
-              ],
-              "query": [
-                {
-                  "key": "fields",
-                  "value": "[metadata,workScheduleId]"
-                }
               ]
             }
           }
@@ -54,7 +48,7 @@
       ]
     },
     {
-      "name": "Folder & Projects",
+      "name": "Folders & Projects",
       "item": [
         {
           "name": "Get Folder by ID",

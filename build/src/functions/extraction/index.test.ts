@@ -1,76 +1,156 @@
-import { EventType } from '@devrev/ts-adaas';
+// Mock the spawn function before importing any modules
+const mockSpawn = jest.fn().mockResolvedValue(undefined);
+jest.mock('@devrev/ts-adaas', () => {
+  const actual = jest.requireActual('@devrev/ts-adaas');
+  return { ...actual, spawn: mockSpawn };
+});
 
-// Mock the domain-mapping-utils module
-jest.mock('../../core/domain-mapping-utils', () => ({
-  readInitialDomainMapping: jest.fn().mockReturnValue(
-    { 
-      format_version: 'v1', devrev_metadata_version: 1, additional_mappings: { record_type_mappings: {} } 
-    }
-  )
-}));
+// Import the test setup utilities
+import { 
+  setupMockSpawn, 
+  setupTestEnvironment, 
+  cleanupTestEnvironment, 
+  createMockEvent, 
+  verifySpawnCalls 
+} from './test-setup';
+import { run } from './index';
+import { AirdropEvent } from '@devrev/ts-adaas';
+import { EventType } from './test-utils';
 
-// Mock the spawn function from the Airdrop SDK
-jest.mock('@devrev/ts-adaas', () => ({
-  ...jest.requireActual('@devrev/ts-adaas'),
-  spawn: jest.fn().mockImplementation(() => Promise.resolve())
-}));
-
-// Import after mocking to ensure we get the mocked version
-import { spawn } from '@devrev/ts-adaas';
-import { readInitialDomainMapping } from '../../core/domain-mapping-utils';
-import { testCases } from './extraction.test.cases';
- 
-describe('extraction function', () => {
-  // Reset mocks before each test
+describe('Extraction Function', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    // Set up test environment
+    setupTestEnvironment(mockSpawn);
   });
 
-  it('should return success when external sync units extraction completes successfully', 
-    testCases.testExternalSyncUnitsSuccess);
+  afterEach(() => {
+    // Clean up test environment
+    cleanupTestEnvironment();
+    
+    // Clear the mock between tests
+    mockSpawn.mockClear();
+  });
 
-  it('should return success when metadata extraction completes successfully', 
-    testCases.testMetadataExtractionSuccess);
+  it('should spawn a worker for ExtractionExternalSyncUnitsStart event type', async () => {
+    // Test with the external sync units extraction event type
+    const mockEvent = createMockEvent(EventType.ExtractionExternalSyncUnitsStart);
 
-  it('should return success when data extraction completes successfully', 
-    testCases.testDataExtractionSuccess);
+    // Call the function with the mock event
+    const result = await run([mockEvent]);
 
-  it('should return success when attachments extraction completes successfully', 
-    testCases.testAttachmentsExtractionSuccess);
+    // Verify the result
+    expect(result).toEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 1 external sync units events'
+    });
+    
+    // Verify that spawn was called with the correct parameters
+    verifySpawnCalls(mockSpawn, 1);
+  });
 
-  it('should return false when external_sync_unit_id is missing for data extraction', 
-    testCases.testMissingExternalSyncUnitId);
+  it('should not spawn a worker for other event types', async () => {
+    // Test with a different event type
+    const mockEvent = createMockEvent(EventType.ExtractionDataDelete);
 
-  it('should return false when no events are provided', 
-    testCases.testNoEvents);
+    // Call the function with the mock event
+    const result = await run([mockEvent]);
 
-  it('should return false when event payload is missing', 
-    testCases.testMissingPayload);
+    // Verify the result
+    expect(result).toEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 0 external sync units events'
+    });
+    
+    // Verify that spawn was not called
+    verifySpawnCalls(mockSpawn, 0);
+  });
 
-  it('should return false when event type is not supported', 
-    testCases.testUnsupportedEventType);
+  it('should spawn a worker for ExtractionMetadataStart event type', async () => {
+    // Test with the metadata extraction event type
+    const mockEvent = createMockEvent(EventType.ExtractionMetadataStart);
 
-  it('should return false when authentication context is missing', 
-    testCases.testMissingAuthContext);
+    // Call the function with the mock event
+    const result = await run([mockEvent]);
 
-  it('should return false when connection data is missing for external sync units', 
-    testCases.testMissingConnectionData);
+    // Verify the result
+    expect(result).toEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 0 external sync units events'
+    });
+    
+    // Verify that spawn was called with the correct parameters
+    verifySpawnCalls(mockSpawn, 1, 'metadata-worker.ts');
+  });
 
-  it('should return false when API key is missing for external sync units', 
-    testCases.testMissingApiKey);
+  it('should spawn a worker for ExtractionDataStart event type', async () => {
+    // Test with the data extraction event type
+    const mockEvent = createMockEvent(EventType.ExtractionDataStart);
 
-  it('should return false when space ID is missing for external sync units', 
-    testCases.testMissingSpaceId);
+    // Call the function with the mock event
+    const result = await run([mockEvent]);
 
-  it('should return false when spawn throws an error for external sync units', 
-    testCases.testSpawnErrorForExternalSyncUnits);
+    // Verify the result
+    expect(result).toEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 0 external sync units events'
+    });
+    
+    // Verify that spawn was called with the correct parameters
+    expect(mockSpawn).toHaveBeenCalledTimes(1);
+    expect(mockSpawn.mock.calls[0][0]).toHaveProperty('initialDomainMapping');
+    expect(mockSpawn.mock.calls[0][0]).toHaveProperty('workerPath');
+    expect(mockSpawn.mock.calls[0][0].workerPath).toContain('data-worker.ts');
+  });
 
-  it('should return false when spawn throws an error for metadata extraction', 
-    testCases.testSpawnErrorForMetadataExtraction);
+  it('should handle multiple events correctly', async () => {
+    // Create multiple events with different event types
+    const event1 = createMockEvent(EventType.ExtractionExternalSyncUnitsStart);
+    const event2 = createMockEvent(EventType.ExtractionDataStart);
+    const event3 = createMockEvent(EventType.ExtractionExternalSyncUnitsStart);
+    
+    // Call the function with multiple events
+    const result = await run([event1, event2, event3]);
+    
+    // Verify the result
+    expect(result).toStrictEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 2 external sync units events'
+    });
+    
+    // Verify that spawn was called twice (once for each ExtractionExternalSyncUnitsStart event)
+    verifySpawnCalls(mockSpawn, 3);
+  });
 
-  it('should return false when spawn throws an error for attachments extraction', 
-    testCases.testSpawnErrorForAttachmentsExtraction);
+  it('should throw an error if events parameter is not an array', async () => {
+    // Call the function with invalid input
+    const invalidInput = null as unknown as AirdropEvent[];
+    
+    // Expect the function to throw an error
+    await expect(run(invalidInput)).rejects.toThrow('Invalid input: events must be an array');
+  });
 
-  it('should handle unexpected errors gracefully', 
-    testCases.testUnexpectedErrors);
+  it('should throw an error if an event is missing required fields', async () => {
+    // Create an invalid event missing context
+    const invalidEvent = {
+      payload: {},
+      execution_metadata: {}
+    } as unknown as AirdropEvent;
+    
+    // Expect the function to throw an error
+    await expect(run([invalidEvent])).rejects.toThrow('missing required field \'context\'');
+  });
+
+  it('should handle empty events array', async () => {
+    // Call the function with an empty array
+    const result = await run([]);
+    
+    // Verify the result
+    expect(result).toEqual({
+      status: 'success',
+      message: 'Extraction function successfully processed 0 external sync units events'
+    });
+    
+    // Verify that spawn was not called
+    verifySpawnCalls(mockSpawn, 0);
+  });
 });

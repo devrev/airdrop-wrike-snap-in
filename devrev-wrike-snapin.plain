@@ -36,6 +36,10 @@
 
 - The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
 
+- The Postman Request Fields is a query parameter with key `fields` and value as a list of strings. The Postman Request Fields are optional and are defined per request basis. The Postman Request Fields for each request is determined solely by The Postman Collection.
+
+- If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
+
 
 ***Functional Requirements:***
 
@@ -48,20 +52,34 @@
 
 - The Postman collection [wrike_postman.json](wrike_postman.json) describes The API.
 
+- The Postman Request Fields is a query parameter with key `fields` and value as a list of strings. The Postman Request Fields are optional and are defined per request basis. The Postman Request Fields for each request is determined solely by The Postman Collection.
+
+- If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
+
 
 ***Functional Requirements:***
 
 - Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects).
 
+  > Add specific output that should be used
+
   ***Acceptance Tests:***
 
   - When using The Test Wrike Credentials a project with the title "First project" must be in the result of The Function.
 
-- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). Contact IDs are retrieved from the "spaces/{spaceId}" endpoint using the "members" field. Information about contacts can be fetched from /contacts/{contactIds}.
+- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). This list can be retrieved from the "spaces/{spaceId}" endpoint using the "members" field. This list is a list of objects representing contacts, with the "id" key representing the contact ID. The rest of information about contacts can be fetched from /contacts/{contactIds}.
+
+  > File [test_data/example_contacts_response.json](test_data/example_contacts_response.json) represents sample output of the endpoint.
+
+  ***Acceptance Tests:***
+
+  - When using The Test Wrike Credentials, The Function must return 5 members with their primaryEmail, firstName and lastName.
 
 - Implement The Function that uses The API to fetch The List of Tasks of The Project (The Fetched Tasks). The Project ID is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
 
-> Here you can add an acceptance test to check if the correct number if tasks is fetched from our test organization on Wrike.
+  ***Acceptance Tests:***
+
+  - When using The Test Wrike Credentials and The Project ID "IEAGS6BYI5RFMPP7", 10 tasks should be fetched in the result of The Function.
 
 ## Generate 'external_domain_metadata.json'
 
@@ -69,6 +87,7 @@
 
 - The structure of The External Domain Metadata JSON object is specified by the JSON schema defined in the resource [external_domain_metadata_schema.json](external_domain_metadata_schema.json).
   - Please note that all refers_to keys in reference and typed_reference fields must use the format "#record:<record_type_key>", where <record_type_key> matches a key in the top-level record_types. This ensures references are unambiguous and valid. Use {} as the value to refer by default identifier (id), or specify { "by_field": "field_name" } to use a custom key.
+  - If an external record type has some concept of states, use the resource [Metadata extraction](docs/metadata-extraction.mdx) for instructions on how to describe it.
 
 ***Non-Functional Requirements:***
 
@@ -105,6 +124,7 @@
 ***Functional Requirements:***
 
 - Implement The Function that generates and returns The Initial Domain Mapping JSON object.
+  > - map users to devu
 
   ***Acceptance Tests:***
 
@@ -122,7 +142,9 @@
 
 ***Functional Requirements:***
 
-- Use The Initial Domain Mapping JSON object for initialDomainMapping parameter when spawning a new worker.
+- When spawning a new worker, pass the parameter object to the spawn function that includes the "initialDomainMapping" key with The Initial Domain Mapping JSON object as the value. Do not pass this under "options" key but directly in the top-most level of the parameter object.
+
+- When spawning a new worker, pass the parameter object to the spawn function that does not contain the "options" key.
 
 - Implement The Function named "extraction" (The Extraction Function) that pushes The Fetched Projects as external sync units if "event_type" equals "EXTRACTION_EXTERNAL_SYNC_UNITS_START".
 
@@ -132,7 +154,7 @@
 
 - If "event_type" equals "EXTRACTION_EXTERNAL_SYNC_UNITS_START" The Extraction Function should fetch the tasks count for each project and push it as part of the external sync units.
 
-- If "event_type" equals "EXTRACTION_METADATA_START" The Extraction Function should implement the "metadata extraction" part of the extraction workflow by pushing The External Domain Metadata JSON object to the repository called 'external_domain_metadata'.
+- If "event_type" equals "EXTRACTION_METADATA_START" The Extraction Function should implement the "metadata extraction" part of the extraction workflow by pushing The External Domain Metadata JSON object to the repository called 'external_domain_metadata'. Please note that The External Domain Metadata JSON object shouldn't be normalized when pushed to the repository.
 
 - If "event_type" equals "EXTRACTION_DATA_START" The Extraction Function should:
   - push The Fetched Contacts to the repository named 'users'

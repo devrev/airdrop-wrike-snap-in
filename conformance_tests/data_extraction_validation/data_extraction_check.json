@@ -1,0 +1,27 @@
+{
+    "execution_metadata": {
+        "function_name": "data_extraction_check",
+        "devrev_endpoint": "http://localhost:8003"
+    },
+    "payload" : {
+        "event_type": "EXTRACTION_DATA_START",
+        "event_context": {
+            "callback_url": "http://localhost:8002/callback",
+            "dev_org": "test-dev-org",
+            "dev_org_id": "test-dev-org-id",
+            "external_sync_unit_id": "test-external-sync-unit",
+            "sync_unit_id": "test-sync-unit",
+            "worker_data_url": "http://localhost:8003/external-worker"
+        },
+        "connection_data": {
+            "org_id": "test-org-id",
+            "key": "key=test-key&token=test-token"
+        }
+    },
+    "context": {
+        "snap_in_version_id": "test-snap-in-version-id",
+        "secrets": {
+            "service_account_token": "test-token"
+        }
+    }
+}

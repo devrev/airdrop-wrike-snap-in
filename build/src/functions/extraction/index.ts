@@ -1,161 +1,172 @@
-import { EventType, spawn } from '@devrev/ts-adaas';
-import { readInitialDomainMapping } from '../../core/domain-mapping-utils';
-import { 
-  getEventTypeDescription,
-  handleAttachmentsExtraction, 
-  handleDataExtraction, 
-  handleExternalSyncUnitsExtraction, 
-  handleMetadataExtraction, 
-  validateConnectionData, 
-  validateExternalSyncUnitId 
-} from './event-handlers';
+import { AirdropEvent, EventType, spawn } from '@devrev/ts-adaas';
+import path from 'path';
+import initialDomainMapping from '../generate_initial_mapping/initial_domain_mapping.json';
 
 /**
- * Function that handles extraction events from Airdrop platform.
- * Currently supports EXTRACTION_EXTERNAL_SYNC_UNITS_START, EXTRACTION_METADATA_START, EXTRACTION_DATA_START, EXTRACTION_ATTACHMENTS_START, and EXTRACTION_ATTACHMENTS_CONTINUE event types.
+ * A function that extracts data from Wrike and pushes it to DevRev.
+ * If the event type is EXTRACTION_EXTERNAL_SYNC_UNITS_START, it will
+ * fetch projects from Wrike and push them as external sync units.
  * 
- * @param events - The events passed to the function
- * @returns An object indicating whether the extraction was successful
+ * @param events - Array of AirdropEvent objects
+ * @returns A response indicating the status of the extraction
  */
-export const extraction = async (events: any[]): Promise<{ success: boolean; message: string; details?: any }> => {
+export async function run(events: AirdropEvent[]): Promise<{ 
+  status: string, 
+  message: string 
+}> {
   try {
-    // Log the events for debugging purposes
-    console.log('Received events for extraction:', 
-      JSON.stringify(events, null, 2).substring(0, 1000) + (JSON.stringify(events).length > 1000 ? '...' : ''));
-    
-    if (!events || events.length === 0) {
-      return {
-        success: false,
-        message: 'No events provided'
-      };
+    // Validate input parameters
+    if (!events || !Array.isArray(events)) {
+      throw new Error('Invalid input: events must be an array');
     }
 
-    const event = events[0];
-    
-    // Check if the event has the necessary structure
-    if (!event.payload || !event.payload.event_type) {
-      return {
-        success: false,
-        message: 'Event payload or event_type is missing',
-        details: { received_event: event }
-      };
-    }
-
-    // Check if the event has the necessary context
-    if (!event.context || !event.context.secrets || !event.context.secrets.service_account_token) {
-      return {
-        success: false,
-        message: 'Event is missing required authentication context',
-        details: { missing_fields: 'context.secrets.service_account_token' }
-      };
-    }
-
-    // Check if the event type is supported before proceeding
-    const supportedEventTypes = [
-      EventType.ExtractionExternalSyncUnitsStart,
-      EventType.ExtractionMetadataStart,
-      EventType.ExtractionDataStart,
-      EventType.ExtractionAttachmentsStart,
-      EventType.ExtractionAttachmentsContinue
-    ];
-    
-    if (!supportedEventTypes.includes(event.payload.event_type)) {
-      return {
-        success: false,
-        message: 'Unsupported event type',
-        details: { 
-          event_type: event.payload.event_type,
-          supported_event_types: supportedEventTypes
-        }
-      };
-    }
-
-    // For external sync units, we need connection data
-    if (event.payload.event_type === EventType.ExtractionExternalSyncUnitsStart || 
-        event.payload.event_type === EventType.ExtractionDataStart ||
-        event.payload.event_type === EventType.ExtractionAttachmentsStart || 
-        event.payload.event_type === EventType.ExtractionAttachmentsContinue) {
+    // Validate that each event is a valid AirdropEvent with all required fields
+    events.forEach((event, index) => {
+      if (!event || typeof event !== 'object') {
+        throw new Error(`Invalid event at index ${index}: event must be a valid AirdropEvent object`);
+      }
       
-      const validationResult = validateConnectionData(event);
-      if (!validationResult.success) {
-        return validationResult;
+      // Check for required fields according to AirdropEvent interface
+      if (!event.context) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'context'`);
       }
-    }
-
-    // For data extraction, we also need the external_sync_unit_id
-    if (event.payload.event_type === EventType.ExtractionDataStart ||
-        event.payload.event_type === EventType.ExtractionAttachmentsStart || 
-        event.payload.event_type === EventType.ExtractionAttachmentsContinue) {
       
-      const validationResult = validateExternalSyncUnitId(event);
-      if (!validationResult.success) {
-        return validationResult;
+      if (!event.context.secrets || !event.context.secrets.service_account_token) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'context.secrets.service_account_token'`);
       }
-    }
-
-    try {
-      // Read the initial domain mapping
-      const initialDomainMapping = readInitialDomainMapping();
-
-      // Check if domain mapping was successfully read
-      if (initialDomainMapping === null) {
-        return {
-          success: false,
-          message: 'Failed to read initial domain mapping',
-          details: { error: 'Domain mapping file could not be read' }
-        };
-      }
-
-      // Handle different event types
-      if (event.payload.event_type === EventType.ExtractionExternalSyncUnitsStart) {
-        await handleExternalSyncUnitsExtraction(event, initialDomainMapping);
-        return {
-          success: true,
-          message: 'External sync units extraction completed successfully'
-        };
-      } else if (event.payload.event_type === EventType.ExtractionMetadataStart) {
-        await handleMetadataExtraction(event, initialDomainMapping);
-        return {
-          success: true,
-          message: 'Metadata extraction completed successfully'
-        };
-      } else if (event.payload.event_type === EventType.ExtractionDataStart) {
-        await handleDataExtraction(event, initialDomainMapping);
-        return {
-          success: true,
-          message: 'Data extraction completed successfully'
-        };
-      }
-      else if (event.payload.event_type === EventType.ExtractionAttachmentsStart || 
-               event.payload.event_type === EventType.ExtractionAttachmentsContinue) {
-        await handleAttachmentsExtraction(event, initialDomainMapping);
-        return {
-          success: true,
-          message: 'Attachments extraction completed successfully'
-        };
-      }
-
-      // This should never happen due to the event type check above
-      return {
-        success: false,
-        message: 'Unsupported event type',
-        details: { event_type: event.payload.event_type }
-      };
-    } catch (error) {
-      const eventTypeDescription = getEventTypeDescription(event.payload.event_type);
       
-      return {
-        success: false,
-        message: `Failed to execute ${eventTypeDescription}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-        details: { error: error instanceof Error ? error.stack : String(error) }
-      };
+      if (!event.context.snap_in_version_id) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'context.snap_in_version_id'`);
+      }
+      
+      if (!event.payload) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'payload'`);
+      }
+      
+      if (!event.payload.event_context) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'payload.event_context'`);
+      }
+      
+      if (!event.execution_metadata || !event.execution_metadata.devrev_endpoint) {
+        throw new Error(`Invalid event at index ${index}: missing required field 'execution_metadata.devrev_endpoint'`);
+      }
+    });
+
+    // Filter events to only include EXTRACTION_EXTERNAL_SYNC_UNITS_START events
+    const externalSyncUnitsEvents = events.filter(event => 
+      event.payload &&
+      event.payload.event_type === EventType.ExtractionExternalSyncUnitsStart
+    );
+
+    // Log the event for debugging purposes
+    console.log(`Extraction function invoked with ${events.length} events, ${externalSyncUnitsEvents.length} are external sync units events`);
+    
+    // For each external sync units event, spawn a worker to process it
+    for (const event of externalSyncUnitsEvents) {
+      // Define the worker path - make sure to use .ts extension as required by the SDK
+      const workerPath = path.resolve(__dirname, 'worker.ts');
+      
+      // Define initial state for the worker
+      const initialState = {};
+      
+      // Spawn the worker to process the event
+      await spawn({
+        event: {
+          ...event,
+          payload: { ...event.payload }
+        },
+        initialDomainMapping,
+        initialState,
+        workerPath
+      });
     }
-  } catch (error) {
-    console.error('Error in extraction function:', error);
+
+    // Filter events to only include EXTRACTION_METADATA_START events
+    const metadataEvents = events.filter(event => 
+      event.payload && 
+      event.payload.event_type === EventType.ExtractionMetadataStart
+    );
+
+    // Log the metadata events for debugging purposes
+    console.log(`Found ${metadataEvents.length} metadata events`);
+    
+    // For each metadata event, spawn a worker to process it
+    for (const event of metadataEvents) {
+      // Define the worker path - make sure to use .ts extension as required by the SDK
+      const workerPath = path.resolve(__dirname, 'metadata-worker.ts');
+      
+      // Define initial state for the worker
+      const initialState = {};
+      
+      // Spawn the worker to process the event
+      await spawn({
+        event: {
+          ...event,
+          payload: { ...event.payload }
+        },
+        initialDomainMapping,
+        initialState,
+        workerPath
+      });
+    }
+
+    // Filter events to only include EXTRACTION_DATA_START events
+    const dataEvents = events.filter(event => 
+      event.payload && 
+      event.payload.event_type === EventType.ExtractionDataStart
+    );
+
+    // Log the data events for debugging purposes
+    console.log(`Found ${dataEvents.length} data extraction events`);
+    
+    // For each data event, spawn a worker to process it
+    for (const event of dataEvents) {
+      // Define the worker path - make sure to use .ts extension as required by the SDK
+      const workerPath = path.resolve(__dirname, 'data-worker.ts');
+      
+      // Define initial state for the worker
+      const initialState = {};
+      
+      // Spawn the worker to process the event
+      await spawn({
+        event,
+        initialDomainMapping,
+        initialState,
+        workerPath
+      });
+    }
+
+    const attachmentsEvents = events.filter(event => 
+      event.payload && 
+      event.payload.event_type === EventType.ExtractionAttachmentsStart
+    );
+
+    for (const event of attachmentsEvents) {
+      // Define the worker path for attachments
+      const workerPath = path.resolve(__dirname, 'attachments-worker.ts');
+      
+      // Define initial state for the worker
+      const initialState = {};
+      
+      // Spawn the worker to process the event
+      await spawn({
+        event,
+        initialDomainMapping,
+        initialState,
+        workerPath
+      });      
+    }
+    
+    // Return a success response that includes both types of events
     return {
-      success: false,
-      message: `Error during extraction: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      details: { error: error instanceof Error ? error.stack : String(error) }
+      status: 'success',
+      message: `Extraction function successfully processed ${externalSyncUnitsEvents.length} external sync units events`
     };
+  } catch (error) {
+    // Log the error for debugging
+    console.error('Error in extraction function:', error);
+    
+    // Re-throw the error to be handled by the caller
+    throw error;
   }
-};
+}

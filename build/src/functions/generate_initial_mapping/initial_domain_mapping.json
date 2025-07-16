@@ -1,0 +1,221 @@
+{
+  "additional_mappings": {
+    "record_type_mappings": {
+      "tasks": {
+        "default_mapping": {
+          "object_type": "ticket",
+          "object_category": "stock"
+        },
+        "possible_record_type_mappings": [
+          {
+            "devrev_leaf_type": "ticket",
+            "forward": true,
+            "reverse": true,
+            "shard": {
+              "mode": "create_shard",
+              "devrev_leaf_type": {
+                "object_type": "ticket",
+                "object_category": "stock"
+              },
+              "stock_field_mappings": {
+                "title": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "title",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  }
+                },
+                "body": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "description",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_rich_text"
+                  }
+                },
+                "stage": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "status",
+                  "transformation_method_for_set": {
+                    "transformation_method": "map_enum",
+                    "forward": {
+                      "Active": {
+                        "value": "work_in_progress"
+                      },
+                      "Completed": {
+                        "value": "resolved"
+                      },
+                      "Deferred": {
+                        "value": "awaiting_customer_response"
+                      },
+                      "Cancelled": {
+                        "value": "canceled"
+                      }
+                    },
+                    "reverse": {
+                      "work_in_progress": {
+                        "value": "Active"
+                      },
+                      "resolved": {
+                        "value": "Completed"
+                      },
+                      "awaiting_customer_response": {
+                        "value": "Deferred"
+                      },
+                      "canceled": {
+                        "value": "Cancelled"
+                      },
+                      "awaiting_development": {
+                        "value": "Active"
+                      },
+                      "awaiting_product_assist": {
+                        "value": "Active"
+                      },
+                      "queued": {
+                        "value": "Active"
+                      },
+                      "in_development": {
+                        "value": "Active"
+                      }
+                    }
+                  },
+                  "fallback": {
+                    "type": "enum",
+                    "value": "work_in_progress"
+                  }
+                },
+                "severity": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "importance",
+                  "transformation_method_for_set": {
+                    "transformation_method": "map_enum",
+                    "forward": {
+                      "High": {
+                        "value": "high"
+                      },
+                      "Normal": {
+                        "value": "medium"
+                      },
+                      "Low": {
+                        "value": "low"
+                      }
+                    },
+                    "reverse": {
+                      "high": {
+                        "value": "High"
+                      },
+                      "medium": {
+                        "value": "Normal"
+                      },
+                      "low": {
+                        "value": "Low"
+                      },
+                      "blocker": {
+                        "value": "High"
+                      }
+                    }
+                  },
+                  "fallback": {
+                    "type": "enum",
+                    "value": "medium"
+                  }
+                },
+                "item_url_field": {
+                  "forward": true,
+                  "reverse": false,
+                  "primary_external_field": "permalink",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  }
+                },
+                "owned_by_ids": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "responsible_ids",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "mapping_as_custom_object": {
+          "forward": true,
+          "reverse": false,
+          "shard": {
+            "mode": "create_shard",
+            "devrev_leaf_type": {
+              "object_type": "custom_object",
+              "object_category": "fresh_custom"
+            }
+          }
+        }
+      },
+      "users": {
+        "default_mapping": {
+          "object_type": "revu",
+          "object_category": "stock"
+        },
+        "possible_record_type_mappings": [
+          {
+            "devrev_leaf_type": "revu",
+            "forward": true,
+            "reverse": true,
+            "shard": {
+              "mode": "create_shard",
+              "devrev_leaf_type": {
+                "object_type": "revu",
+                "object_category": "stock"
+              },
+              "stock_field_mappings": {
+                "display_name": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "first_name",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  },
+                  "fallback": {
+                    "type": "text",
+                    "value": "Unknown User"
+                  }
+                },
+                "full_name": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "first_name",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  }
+                },
+                "email": {
+                  "forward": true,
+                  "reverse": true,
+                  "primary_external_field": "email",
+                  "transformation_method_for_set": {
+                    "transformation_method": "use_directly"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "mapping_as_custom_object": {
+          "forward": true,
+          "reverse": false,
+          "shard": {
+            "mode": "create_shard",
+            "devrev_leaf_type": {
+              "object_type": "custom_object",
+              "object_category": "fresh_custom"
+            }
+          }
+        }
+      }
+    }
+  }
+}
