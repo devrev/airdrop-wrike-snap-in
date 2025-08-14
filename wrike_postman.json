@@ -41,8 +41,24 @@
               "path": [
                 "contacts",
                 "KUAFY3BJ"
+              ],
+              "query": [
+                {
+                  "key": "types",
+                  "value": "[Person]"
+                }
               ]
             }
+          },
+          "response": {
+            "name": "Get Information about specific contact",
+            "originalRequest": {
+              "method": "GET",
+              "url": "{{WrikeAPI}}/contacts/KUANFJBJ,NVJKSNJK"
+            },
+            "status": "OK",
+            "code": 200,
+            "body": "{\"kind\":\"contacts\",\"data\":[{\"id\":\"KUANFJBJ\",\"firstName\":\"Jane\",\"lastName\":\"Smith\",\"type\":\"Person\",\"profiles\":[{\"accountId\":\"IEAGS6BY\",\"email\":\"janesmith@company.com\",\"role\":\"User\",\"external\":false,\"admin\":false,\"owner\":false,\"active\":true}],\"avatarUrl\":\"https://www.wrike.com/avatars//EB/10/Box_ffe57373_80-49_v1.png\",\"timezone\":\"Europe/London\",\"locale\":\"en\",\"deleted\":false,\"title\":\"Accountant\",\"primaryEmail\":\"janesmith@company.com\"},{\"id\":\"NVJKSNJK\",\"firstName\":\"Jack\",\"lastName\":\"Black\",\"type\":\"Person\",\"profiles\":[{\"accountId\":\"IEAGS6BY\",\"email\":\"jackblack@company.com\",\"role\":\"User\",\"external\":false,\"admin\":false,\"owner\":false,\"active\":true}],\"avatarUrl\":\"https://www.wrike.com/avatars//A5/A2/Box_ffafb42b_80-50_v1.png\",\"timezone\":\"Europe/London\",\"locale\":\"en\",\"deleted\":false,\"title\":\"Accounting Manager\",\"primaryEmail\":\"jackblack@company.com\"}]}"
           }
         }
       ]
@@ -73,6 +89,32 @@
                 }
               ]
             }
+          }
+        },
+        {
+          "name": "Get Projects in a specific Space",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{WrikeAPI}}/spaces/{spaceId}/folders?project=true",
+              "host": [
+                "{{WrikeAPI}}"
+              ],
+              "path": [
+                "folders",
+                "IEACW7SVI4PX3YZS"
+              ]
+            }
+          },
+          "response": {
+            "name": "Get Projects in a specific Space",
+            "originalRequest": {
+              "method": "GET",
+              "url": "{{WrikeAPI}}/spaces/{spaceId}/folders?project=true"
+            },
+            "status": "OK",
+            "code": 200,
+            "body": "{\"kind\":\"folders\",\"data\":[{\"id\":\"IEAGS6BYI5RFMPP7\",\"accountId\":\"IEAGS6BY\",\"title\":\"First project\",\"createdDate\":\"2025-04-29T07:18:32Z\",\"updatedDate\":\"2025-05-26T07:44:20Z\",\"description\":\"\",\"sharedIds\":[\"KUAVRIOP\",\"KX7XOYQF\",\"KUAUZTPW\",\"KUAVRIOO\",\"KUAVRIOS\"],\"parentIds\":[\"IEAGS6BYI5RFMPPY\"],\"childIds\":[],\"scope\":\"WsFolder\",\"permalink\":\"https://www.wrike.com/open.htm?id=1649819135\",\"workflowId\":\"IEAGS6BYK4F3BCSQ\",\"project\":{\"authorId\":\"KUAUZTPW\",\"ownerIds\":[\"KUAUZTPW\"],\"customStatusId\":\"IEAGS6BYJMF3BCR4\",\"createdDate\":\"2025-04-29T07:18:32Z\"}}]}"
           }
         }
       ]
@@ -415,6 +457,16 @@
                 }
               ]
             }
+          },
+          "response": {
+            "name": "Get Space by ID",
+            "originalRequest": {
+              "method": "GET",
+              "url": "{{WrikeAPI}}/spaces/IEACW7SVI4XDCUZX?fields=[members]"
+            },
+            "status": "OK",
+            "code": 200,
+            "body": "{\"kind\":\"spaces\",\"data\":[{\"id\":\"IEAGS6BYI5RFMPPY\",\"title\":\"First space\",\"avatarUrl\":\"https://www.wrike.com/static/spaceicons2/v3/6/6-planet.png\",\"accessType\":\"Public\",\"archived\":false,\"members\":[{\"id\":\"KUAVRIOP\",\"accessRoleId\":\"IEAGS6BYND777777\",\"isManager\":false},{\"id\":\"KUAUZTPW\",\"accessRoleId\":\"IEAGS6BYND777777\",\"isManager\":true},{\"id\":\"KUAVRIOO\",\"accessRoleId\":\"IEAGS6BYND777777\",\"isManager\":false},{\"id\":\"KUAVRIOS\",\"accessRoleId\":\"IEAGS6BYND777777\",\"isManager\":false},{\"id\":\"KX7XOYQF\",\"accessRoleId\":\"IEAGS6BYND777777\",\"isManager\":false}],\"guestRoleId\":\"IEAGS6BYND777777\",\"defaultProjectWorkflowId\":\"IEAGS6BYK77ZNB6I\",\"defaultTaskWorkflowId\":\"IEAGS6BYK4F3BCSQ\"}]}"
           }
         }
       ]

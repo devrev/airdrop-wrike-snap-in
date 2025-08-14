@@ -56,26 +56,25 @@
 
 - If a given request does not have a query parameter with key `fields`, do not include it in the request. If a given request has a query parameter with key `fields`, include only the fields that are referenced by The Postman Request Fields for the given request in the "fields" query parameter. Do not include or make up any additional fields not specified in The Postman Collection.
 
+- The Mapping is a method in The Implementation Code that maps the fields in The API response to the fields in The Function's output. The Mapping should output "snake_case" for JSON keys. The Mapping should map every single field from The OpenAPI Specification to The Function's output.
+
+- If The Function uses The API to fetch data, The Mapping should be used along its rules.
 
 ***Functional Requirements:***
 
-- Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects).
-
-  > Add specific output that should be used
+- Implement The Function that uses The API to fetch The List of Projects (The Fetched Projects) using the endpoint "/spaces/{spaceId}/folders?project=true".
 
   ***Acceptance Tests:***
 
   - When using The Test Wrike Credentials a project with the title "First project" must be in the result of The Function.
 
-- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). This list can be retrieved from the "spaces/{spaceId}" endpoint using the "members" field. This list is a list of objects representing contacts, with the "id" key representing the contact ID. The rest of information about contacts can be fetched from /contacts/{contactIds}.
-
-  > File [test_data/example_contacts_response.json](test_data/example_contacts_response.json) represents sample output of the endpoint.
+- Implement The Function that uses The API to fetch The List of Contacts of The Space (The Fetched Contacts). This list can be retrieved using the endpoint "spaces/{spaceId}?fields=[members]". The retrieved list contains objects representing contacts. The rest of information about contacts can be fetched from /contacts/{contactIds}?types=[Person]. 
 
   ***Acceptance Tests:***
 
-  - When using The Test Wrike Credentials, The Function must return 5 members with their primaryEmail, firstName and lastName.
+  - When using The Test Wrike Credentials, The Function must return 3 members with their primaryEmail, firstName and lastName.
 
-- Implement The Function that uses The API to fetch The List of Tasks of The Project (The Fetched Tasks). The Project ID is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
+- Implement The Function that uses The API to fetch The List of Tasks of The Project (The Fetched Tasks) using the endpoint "/folders/{projectId}/tasks". The projectId is provided in the "external_sync_unit_id" field of the "event_context" dictionary which is part of "payload" dictionary.
 
   ***Acceptance Tests:***
 
@@ -124,14 +123,13 @@
 ***Functional Requirements:***
 
 - Implement The Function that generates and returns The Initial Domain Mapping JSON object.
-  > - map users to devu
 
   ***Acceptance Tests:***
 
   - Validate generated The Initial Domain Mapping JSON object with the chef-cli tool (The Chef CLI) using the command "chef-cli initial-mapping check -m <The External Domain Metadata JSON object file>":
     - The Chef CLI reads The Initial Domain Mapping JSON object from stdin.
     - The path to The Chef CLI executable is provided in the environment variables `CHEF_CLI_PATH`.
-    - The test should always fail if The Chef CLI returns a non-empty output.
+    - The test passes only if the "RemainingDeficiencies" key in the returned JSON output has a value of null. If the value is anything other than null the test must fail.
     - The test should always fail if The Chef CLI is not available.
 
 ## Pushing data to DevRev servers
